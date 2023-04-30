@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from 'react'
-import s from './Layout.module.scss'
 import LeftNav from '../LeftNav/LeftNav'
 import TopNav from '../topNav/TopNav'
 import { Footer } from '../Footer/Footer'
@@ -46,7 +45,7 @@ const Layout:FC<Props> = ({children}) => {
     console.log("Leftnav opn" , leftNavOpen)
   })
   return (
-    <div className={s.layout}>
+    <div>
         <TopNav links={[
             {link: "/", label: "Home"},
             {link: "/about", label: "About"},
