@@ -45,7 +45,7 @@ const Layout:FC<Props> = ({children}) => {
     console.log("Leftnav opn" , leftNavOpen)
   })
   return (
-    <div>
+    <div> 
         <TopNav links={[
             {link: "/", label: "Home"},
             {link: "/about", label: "About"},

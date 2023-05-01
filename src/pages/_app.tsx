@@ -5,10 +5,10 @@ import Layout from '@/components/Layout/Layout'
 import Head from 'next/head'
 import { CSSProperties, useState } from 'react'
 import { Notifications } from '@mantine/notifications';
+import { SessionProvider } from "next-auth/react"
 
 
-
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps: {session, ...pageProps} }: AppProps) {
 
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
 
@@ -28,22 +28,25 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="robots" content="index, follow" />
         <meta name="googlebot" content="index, follow" />
       </Head> 
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
-        <MantineProvider
-          withGlobalStyles
-          withNormalizeCSS
-          theme={{
-            colorScheme: colorScheme,
-            primaryColor: "yellow"
 
-          }}
-        >
-          <Notifications />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </MantineProvider>
-      </ColorSchemeProvider>
+      <SessionProvider session = {session}>
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
+          <MantineProvider
+            withGlobalStyles
+            withNormalizeCSS
+            theme={{
+              colorScheme: colorScheme,
+              primaryColor: "yellow"
+
+            }}
+          >
+            <Notifications />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </SessionProvider>
     </>
   )
 }

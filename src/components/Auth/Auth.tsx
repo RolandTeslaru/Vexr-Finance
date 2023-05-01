@@ -18,7 +18,7 @@ import { GoogleButton, FacebookButton } from "../SocialButtons/SocialButtons";
 import PasswordCheckInput from '../PasswordInput/PasswordInput';
 import { notifications } from '@mantine/notifications';
 import { TbCheck } from "react-icons/tb"
-
+import { signIn, signOut, useSession, getSession } from "next-auth/react";
 
 export function Auth(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
@@ -36,16 +36,37 @@ export function Auth(props: PaperProps) {
     },
   });
 
-  const handleSubmit = (data:any) => {
+  const handleSubmit = async (data:any) => {
     console.log(data);
 
     if(type === "register")
+    {
         notifications.show({
             title: "Succesfully created you account",
             message: "You can now login to your account",
             icon: <TbCheck size="1.5rem" />,
             color: "teal",
         })
+
+    }
+    else if(type ==="login"){
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      })
+
+      //@ts-expect-error
+      if(result.error){
+        //@ts-expect-error
+        console.error(result.error);
+        notifications.show({
+          title:"Error",
+          message: "Inavlid email or password",
+          color: "red",
+        })
+      }
+    }
   }
 
   return (
@@ -58,7 +79,7 @@ export function Auth(props: PaperProps) {
       </Text>
 
       <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl">Google</GoogleButton>
+        <GoogleButton radius="xl" onClick={() => signIn("google", {callbackUrl: "http://localhost:3000"})} >Google</GoogleButton>
         <FacebookButton radius="xl">Facebook</FacebookButton>
       </Group>
 
@@ -137,3 +158,19 @@ export function Auth(props: PaperProps) {
     </Paper>
   );
 }
+
+// export async function getServerSideProps(context:any) {
+//   const session = await getSession(context)
+//   if(!session){
+//     return {
+//       redirect: {
+//         destination: "/login",
+//         permanent: false,
+//       }
+//     }
+//   }
+
+//   return {
+//     props: { session }
+//   }
+// }
