@@ -1,5 +1,5 @@
-import { useToggle, upperFirst } from '@mantine/hooks';
-import { useForm } from '@mantine/form';
+import { useToggle, upperFirst } from "@mantine/hooks";
+import { useForm } from "@mantine/form";
 import {
   TextInput,
   PasswordInput,
@@ -13,64 +13,172 @@ import {
   Anchor,
   Stack,
   ButtonProps,
-} from '@mantine/core';
+} from "@mantine/core";
 import { GoogleButton, FacebookButton } from "../SocialButtons/SocialButtons";
-import PasswordCheckInput from '../PasswordInput/PasswordInput';
-import { notifications } from '@mantine/notifications';
-import { TbCheck } from "react-icons/tb"
+import PasswordCheckInput from "../PasswordInput/PasswordInput";
+import { notifications } from "@mantine/notifications";
+import { TbCheck } from "react-icons/tb";
 import { signIn, signOut, useSession, getSession } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import axios, { AxiosError } from "axios";
+import { LoginUserParams } from "../../types/index";
+
+const loginUser = async ({ email, password }: LoginUserParams) => {
+  const res = await signIn("credentials", {
+    redirect: false,
+    email,
+    password,
+  });
+
+  return res;
+};
+
+const handleGoogleSignIn = async () => {
+    const result = await signIn("google", { callbackUrl: "http://localhost:3000/dashboard"});
+
+    if (result?.error) {
+      notifications.show({
+        title: "Something went wrong",
+        message: result.error,
+        color: "red",
+      });
+    }
+
+    
+
+}
 
 export function Auth(props: PaperProps) {
-  const [type, toggle] = useToggle(['login', 'register']);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const router = useRouter();
+
+  const [type, toggle] = useToggle(["login", "register"]);
   const form = useForm({
     initialValues: {
-      email: '',
-      name: '',
-      password: '',
+      email: "",
+      name: "",
+      password: "",
       terms: true,
     },
-
+    
     validate: {
-      email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
+      email: (val: string) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
+      password: (val) =>
+        val.length <= 6
+          ? "Password should include at least 6 characters"
+          : null,
     },
   });
 
-  const handleSubmit = async (data:any) => {
-    console.log(data);
+  const handleSubmit = async (data: any) => {
 
-    if(type === "register")
-    {
-        notifications.show({
-            title: "Succesfully created you account",
-            message: "You can now login to your account",
+    if (type === "register") {
+      try {
+        setSubmitLoading(true);
+        const apiRes = await axios.post(
+          "http://localhost:3000/api/auth/signUp",
+          data
+        );
+
+        if (apiRes?.data.success) {
+          const loginRes = await loginUser({
+            email: data.email,
+            password: data.password,
+          });
+
+          if (loginRes && !loginRes.ok) {
+            setSubmitError(loginRes.error || "login failed");
+            notifications.show({
+              title: "Error",
+              message: loginRes.error || "login failed",
+              color: "red",
+            });
+          } else {
+            notifications.show({
+              title: "Succesfully created you account",
+              message: "You can now login to your account",
+              icon: <TbCheck size="1.5rem" />,
+              color: "teal",
+            });
+            router.push("/dashboard");
+          }
+        }
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          const errorMsg = error.response?.data?.error;
+
+          setSubmitError(errorMsg);
+
+          notifications.show({
+            title: "Error",
+            message: errorMsg,
+            color: "red",
+          });
+        }
+      }
+
+      setSubmitLoading(false);
+    } else if (type === "login") {
+      try {
+        setSubmitLoading(true);
+
+        const loginRes = await loginUser({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (loginRes && !loginRes.ok) {
+          setSubmitError(loginRes.error || "login failed");
+          notifications.show({
+            title: "Error",
+            message: loginRes.error || "login failed",
+            color: "red",
+          });
+        } else {
+          notifications.show({
+            title: "Succesfully logged in",
+            message: "Welcome back",
             icon: <TbCheck size="1.5rem" />,
             color: "teal",
-        })
+          });
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          const errorMsg = error.response?.data?.error;
 
-    }
-    else if(type ==="login"){
-      const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      })
+          setSubmitError(errorMsg);
 
-      //@ts-expect-error
-      if(result.error){
-        //@ts-expect-error
-        console.error(result.error);
+          notifications.show({
+            title: "Error",
+            message: errorMsg,
+            color: "red",
+          });
+        }
         notifications.show({
-          title:"Error",
+          title: "Error",
           message: "Inavlid email or password",
           color: "red",
-        })
+        });
       }
+
+      setSubmitLoading(false);
     }
-  }
+  };
 
   return (
-    <Paper radius="md" p="xl" withBorder style={{minWidth: "400px", transition: "all 100ms ease"}} {...props}>
+    <Paper
+      radius="md"
+      p="xl"
+      withBorder
+      style={{ minWidth: "400px", transition: "all 100ms ease" }}
+      {...props}
+    >
       <Text size="lg" weight={500}>
         Welcome to Vexr Finance,
       </Text>
@@ -79,22 +187,32 @@ export function Auth(props: PaperProps) {
       </Text>
 
       <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl" onClick={() => signIn("google", {callbackUrl: "http://localhost:3000"})} >Google</GoogleButton>
+        <GoogleButton
+          radius="xl"
+          onClick={handleGoogleSignIn}
+        >
+          Google
+        </GoogleButton>
         <FacebookButton radius="xl">Facebook</FacebookButton>
       </Group>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit((data, event:any) => { 
-        handleSubmit(data)
-         event.currentTarget.reset() })}>
+      <form
+        onSubmit={form.onSubmit((data, event: any) => {
+          handleSubmit(data);
+          event.currentTarget.reset();
+        })}
+      >
         <Stack>
-          {type === 'register' && (
+          {type === "register" && (
             <TextInput
               label="Name"
               placeholder="Your name"
               value={form.values.name}
-              onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
+              onChange={(event) =>
+                form.setFieldValue("name", event.currentTarget.value)
+              }
               radius="md"
             />
           )}
@@ -104,36 +222,47 @@ export function Auth(props: PaperProps) {
             label="Email"
             placeholder="hello@mantine.dev"
             value={form.values.email}
-            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-            error={form.errors.email && 'Invalid email'}
+            onChange={(event) =>
+              form.setFieldValue("email", event.currentTarget.value)
+            }
+            error={form.errors.email && "Invalid email"}
             radius="md"
           />
-          {type === "register" ? 
+          {type === "register" ? (
             <PasswordCheckInput
-                onChange={(event) => form.setFieldValue('password', event.currentTarget.value)} 
-                error={form.errors.password && 'Password should include at least 6 characters'}
-                value={form.values.password}
-
-            /> 
-            : 
-            <PasswordInput
-                required
-                label="Password"
-                placeholder="Your password"
-                value={form.values.password}
-                onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-                error={form.errors.password && 'Password should include at least 6 characters'}
-                radius="md"
+              onChange={(event) =>
+                form.setFieldValue("password", event.currentTarget.value)
+              }
+              error={
+                form.errors.password &&
+                "Password should include at least 6 characters"
+              }
+              value={form.values.password}
             />
-        }
+          ) : (
+            <PasswordInput
+              required
+              label="Password"
+              placeholder="Your password"
+              value={form.values.password}
+              onChange={(event) =>
+                form.setFieldValue("password", event.currentTarget.value)
+              }
+              error={
+                form.errors.password &&
+                "Password should include at least 6 characters"
+              }
+              radius="md"
+            />
+          )}
 
-          
-
-          {type === 'register' && (
+          {type === "register" && (
             <Checkbox
               label="I accept terms and conditions"
               checked={form.values.terms}
-              onChange={(event) => form.setFieldValue('terms', event.currentTarget.checked)}
+              onChange={(event) =>
+                form.setFieldValue("terms", event.currentTarget.checked)
+              }
             />
           )}
         </Stack>
@@ -146,11 +275,11 @@ export function Auth(props: PaperProps) {
             onClick={() => toggle()}
             size="xs"
           >
-            {type === 'register'
-              ? 'Already have an account? Login'
+            {type === "register"
+              ? "Already have an account? Login"
               : "Don't have an account? Register"}
           </Anchor>
-          <Button type="submit" radius="xl" >
+          <Button type="submit" radius="xl" disabled={submitLoading}>
             {upperFirst(type)}
           </Button>
         </Group>

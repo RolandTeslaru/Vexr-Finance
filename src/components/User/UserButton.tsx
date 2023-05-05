@@ -7,6 +7,7 @@ import {
     createStyles,
   } from '@mantine/core';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
   import { TbChevronRight} from "react-icons/tb"
   
   const useStyles = createStyles((theme) => ({
@@ -32,8 +33,10 @@ import { motion } from 'framer-motion';
   }
   
   export function UserButton({ image, name, email, icon, openNavState, ...others }: UserButtonProps) {
+    
     const { classes } = useStyles();
-  
+    const {data: session} = useSession();
+
     return (
       <UnstyledButton className={classes.user} {...others}>
         <Group sx={{flexWrap: "nowrap"}}>
@@ -44,12 +47,17 @@ import { motion } from 'framer-motion';
             
                 <motion.div style={{ flex: 1 }} initial={{opacity: 0}} animate={{ opacity: 1}} transition={{delay: 0.1}}>
                     <Text size="sm" weight={500}>
-                    {name}
+                    { //@ts-expect-error
+                    session?.user.name ? session.user.name : "Guest"}
                     </Text>
-        
-                    <Text color="dimmed" size="xs">
-                    {email}
-                    </Text>
+
+                    {//@ts-expect-error
+                    session?.user.email && <>
+                      <Text color="dimmed" size="xs">
+                      {session.user.email}
+                      </Text>  
+                    </>}
+                    
                 </motion.div>
 
                 {icon || 

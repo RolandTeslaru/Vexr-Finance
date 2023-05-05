@@ -26,7 +26,7 @@ import {RiShieldKeyholeFill} from "react-icons/ri";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const useStyles = createStyles((theme) => ({
+const style = createStyles((theme) => ({
   home: {},
   inner: {
     display: "flex",
@@ -83,7 +83,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Home() {
-  const { classes } = useStyles();
+  const { classes } = style();
   return (
     <div className={classes.home} >
       <Container sx={{ minHeight: "70vh", marginTop: "1rem" }}>

@@ -1,0 +1,39 @@
+  .card{
+    width: 80%;
+    height: 400px;
+    margin-top: 80px;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+    &:before{
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -45px;
+        width: 190%;
+        z-index: 0;
+        background: linear-gradient(83.23deg, #f59f0091 0%, #ffdb4c 80%);
+        background-blend-mode: overlay;
+
+        -webkit-mask-image: radial-gradient(
+            rgba(0, 0, 0, 0.5),
+            transparent 60%,
+        );
+        mask-image: radial-gradient(
+            rgba(0, 0, 0, 0.5),
+            transparent 56%,
+        );
+    }
+    .content{
+        font-size: x-large;
+        margin: 40px;
+        margin-left: 80px;
+        position: relative;
+        height: auto;
+        .center{
+            height: auto;
+            margin-top: 40px;
+        }
+    }
+}

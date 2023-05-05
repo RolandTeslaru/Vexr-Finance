@@ -6,7 +6,7 @@ import { UserButton } from '../User/UserButton';
 
 
 const mockdata = [
-    { label: 'Dashboard', icon: TbGauge },
+    { label: 'Dashboard', icon: TbGauge, link: '/dashboard' },
     {
       label: 'Market news',
       icon: TbNotes,
@@ -92,8 +92,11 @@ const mockdata = [
 
 
 const LeftNav = ({openState, setOpenState}: LeftNavProps) => {
+    
     const { classes } = useStyles();
-    const links = mockdata.map((item, index) => <LinksGroup initial={{opacity: 0, x: -30}} animate={{opacity: 1, x:0}} transition={{delay: index * 0.1}} openState={openState} setNavOpenState={setOpenState} {...item} key={item.label} />);
+    const links = mockdata.map(
+      (item, index) => <LinksGroup initial={{opacity: 0, x: -30}} animate={{opacity: 1, x:0}} transition={{delay: index * 0.1}} openState={openState} setNavOpenState={setOpenState} {...item} key={item.label} />
+    );
   
     return (
       <Navbar  height={800} width={{ sm: openState ? 300 : 65 }} p="md" className={classes.navbar}>
