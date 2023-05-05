@@ -8,10 +8,10 @@ const useStyles = createStyles((theme) => ({
   card: {
     width: "80%",
     height: "500px",
-    marginTop: "80px",
+    margin: "80px",
     overflowX: "hidden",
     position: "relative",
-    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.colors.gray[0],
+    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.colors.gray[3],
 
   },
 }))

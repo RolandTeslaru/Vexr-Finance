@@ -22,7 +22,7 @@ const useStyles = createStyles((theme) => ({
     fontSize: theme.fontSizes.sm,
     transition: "all 200ms ease",
     '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[4],
       color: theme.colorScheme === 'dark' ? theme.white : theme.black,
     },
   },

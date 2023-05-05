@@ -37,7 +37,7 @@ export default function App({ Component, pageProps: {session, ...pageProps} }: A
             theme={{
               colorScheme: colorScheme,
               primaryColor: "yellow"
-
+              
             }}
           >
             <Notifications />
