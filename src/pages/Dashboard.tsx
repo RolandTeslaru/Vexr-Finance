@@ -4,6 +4,7 @@ import { Card, Center, Container, Paper, createStyles } from "@mantine/core";
 import s from "../styles/dashboard.module.scss";
 import Banner from "@/components/Banner/Banner";
 import Trending from "@/components/Trending/Trending";
+import Markets from "@/components/Markets/Markets";
 
 const style = createStyles((theme) => ({
   card: {
@@ -21,8 +22,12 @@ const Dashboard = () => {
   return (
     <div className={s.dashboard}>
       <Banner title={"Dashboard"}/>
+      <Center sx={{marginBottom: "40px"}}>
+          <Trending/>
+      </Center>
+
       <Center>
-        <Trending/>
+        <Markets/>    
       </Center>
     </div>
   );

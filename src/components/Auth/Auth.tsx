@@ -44,9 +44,6 @@ const handleGoogleSignIn = async () => {
         color: "red",
       });
     }
-
-    
-
 }
 
 export function Auth(props: PaperProps) {

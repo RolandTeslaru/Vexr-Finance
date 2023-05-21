@@ -6,6 +6,7 @@ import Head from 'next/head'
 import { CSSProperties, useState } from 'react'
 import { Notifications } from '@mantine/notifications';
 import { SessionProvider } from "next-auth/react"
+import { CryptoProvider } from '@/context/CryptoContext'
 
 
 export default function App({ Component, pageProps: {session, ...pageProps} }: AppProps) {
@@ -40,10 +41,13 @@ export default function App({ Component, pageProps: {session, ...pageProps} }: A
               
             }}
           >
-            <Notifications />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+              <Notifications />
+              <Layout>
+                <CryptoProvider> 
+
+                  <Component {...pageProps} />
+                </CryptoProvider>
+              </Layout>
           </MantineProvider>
         </ColorSchemeProvider>
       </SessionProvider>

@@ -12,7 +12,7 @@ const useStyles = createStyles((theme) => ({
     overflowX: "hidden",
     position: "relative",
     backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.colors.gray[3],
-
+    borderRadius: "10px"
   },
 }))
 

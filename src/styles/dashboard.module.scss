@@ -1,4 +1,7 @@
 .dashboard{
     min-height: 100vh;
     min-width: 100vw;
+    .content{
+        width: fit-content;
+    }
 }
