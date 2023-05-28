@@ -1,0 +1,16 @@
+.Header{
+    margin: 0 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.Markets{
+    width: 1100px;
+}
+
+
+@media screen and (max-width: 1200px){
+    .Markets{
+        width: 84%;
+    }
+}

@@ -69,14 +69,25 @@ interface StatsGridProps {
 
 export function CoinCard({ data, isSkeleton, coin }: StatsGridProps) {
   const { classes } = useStyles();
-  console.log("DATAAA", data);
+
   let stats;
   if (isSkeleton) {
     // Show skeleton when data is loading
     return (
       <div className={classes.root}>
-        <Paper withBorder p="md" radius="md">
-          <Skeleton variant="rectangular" height={80} />
+        <Paper withBorder p="md" radius="md" w={"250px"}>
+          <Group position="apart">
+            <Skeleton variant="rectangular" height={30} />
+
+          </Group>
+
+          <Group align="flex-end" spacing="xs" mt={25}>
+            <Skeleton variant="rectangular" height={40} width={100} />
+          </Group>
+
+          <Group spacing="md" p="md">
+            <Skeleton variant="rectangular" height={10} width={100} />
+          </Group>
         </Paper>
       </div>
     );

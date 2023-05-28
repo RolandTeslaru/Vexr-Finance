@@ -7,6 +7,8 @@ import { CSSProperties, useState } from 'react'
 import { Notifications } from '@mantine/notifications';
 import { SessionProvider } from "next-auth/react"
 import { CryptoProvider } from '@/context/CryptoContext'
+import { TrendingProvider } from '@/context/TrendingContext'
+import { StorageProvider } from '@/context/StorageContext'
 
 
 export default function App({ Component, pageProps: {session, ...pageProps} }: AppProps) {
@@ -43,10 +45,17 @@ export default function App({ Component, pageProps: {session, ...pageProps} }: A
           >
               <Notifications />
               <Layout>
-                <CryptoProvider> 
+                
+                <StorageProvider>
+                  <CryptoProvider> 
+                    <TrendingProvider>
 
-                  <Component {...pageProps} />
-                </CryptoProvider>
+                      <Component {...pageProps} />
+                      
+                    </TrendingProvider>
+                  </CryptoProvider>
+                </StorageProvider>
+              
               </Layout>
           </MantineProvider>
         </ColorSchemeProvider>

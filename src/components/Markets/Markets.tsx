@@ -1,5 +1,5 @@
-import { Anchor, Paper, ScrollArea, Table } from '@mantine/core'
-import React, { useContext} from 'react'
+import { Anchor, Box, Center, Paper, ScrollArea, SegmentedControl, Table, TabsProps, rem } from '@mantine/core'
+import React, { useContext, useState} from 'react'
 import useAxios from '../../hooks/useAxios';
 import Image from 'next/image';
 import Currency from 'react-currency-formatter';
@@ -10,46 +10,97 @@ import {
     TbCoin,
     TbArrowUpRight,
     TbArrowDownRight,
+    TbMoon,
+    TbSun,
   } from "react-icons/tb";
   import { notifications } from "@mantine/notifications";
 import { CryptoContext } from '@/context/CryptoContext';
 import HighLowIndicator from '../HighLowIndicator/HighLowIndicator';
+import s from "./Markets.module.scss"
+import { Tabs, Skeleton } from '@mantine/core';
+import {AiOutlineStar} from "react-icons/ai";
+import { StorageContext } from '@/context/StorageContext';
 
-interface ICoinMarket {
-    id: string;
-    coin_id: string;
-    name: string;
-    image: string;
-    score: number,
-    market_cap_rank: number,
-    price_btc: number,
-    symbol: string,
-    current_price: number,
-    price_change_percentage_24h: number,
-    market_cap: number,
+const MarketTabs = ({ activeTab, setActiveTab }: any) => {
+    return (
+      <SegmentedControl
+        value={activeTab}
+        onChange={(value: "coins" | "favorites") => setActiveTab(value)}
+        color="yellow"
+        data={[
+          {
+            value: "coins",
+            label: (
+              <Center>
+                <TbSun size="1rem" />
+                <Box ml={10}>All Currencies</Box>
+              </Center>
+            ),
+          },
+          {
+            value: "favorite",
+            label: (
+              <Center>
+                <TbMoon size="1rem" />
+                <Box ml={10}>Favorites</Box>
+              </Center>
+            ),
+          },
+        ]}
+      ></SegmentedControl>
+    );
 }
 
 const Markets = () => {
 
     let {marketData, marketLoading, marketError} = useContext(CryptoContext);
+    console.log("MARKET DATA", marketData)
+
+    const [activeTab, setActiveTab] = useState<"coins" | "favorites">("coins")
+
+    const {saveCoin, savedCoins} = useContext(StorageContext);
+    console.log("saved Coins ", savedCoins);
+
+    const onClickStar = (coinId: string) => {
+        console.log("Star with id ", coinId, "clicked")
+        saveCoin(coinId)
+    }
 
   return (
-    <Paper w={"70%"} p="xl" radius="md">
-        <h1>Markets</h1>
+    <Paper className={s.Markets} p="xl" radius="md">
+        <div className={s.Header}>
+            <h1>Markets</h1>
+            <div style={{height: "fit-content" , margin: "auto 0"}}>
+                <MarketTabs activeTab={activeTab} setActiveTab={setActiveTab}/>
+            </div>
+            
+        </div>
+          
         <ScrollArea>
             <Table verticalSpacing="xs">
                 <thead>
+                    <th> </th>
                     <th>Rank</th>
                     <th>Currency</th>
                     <th>Price</th>
                     <th>24H</th>
                     <th>Market Cap</th>
-                    <th>Buy/Sell Rate</th>
+                    <th>Low/High Rate</th>
                 </thead>
                 <tbody>
-                    {marketLoading ? 
-                    [...Array(8)].map((_, index) => ( 
-                    <> dasd </>
+                    {activeTab === "coins" ? 
+                    marketLoading ? 
+                    [...Array(20)].map((_, index) => ( 
+                    <tr key={index}>
+                        <td></td>
+                        <td> <Skeleton height={10}  mb="xl"/></td>
+                        <td> <Skeleton height={10}  mb="xl"/></td>
+                        <td> <Skeleton height={10}  mb="xl"/></td>
+                        <td> <Skeleton height={10}  mb="xl"/></td>
+                        <td> <Skeleton height={10}  mb="xl"/></td>
+                        <td> <Skeleton height={10}  mb="xl"/></td>
+
+                    </tr>
                     )) : 
                     marketData?.map((coin , index) => (
                         <tr key={index}>
@@ -104,9 +155,14 @@ const Markets = () => {
                                 </p>
                             </td>
                             <td>
+                                <HighLowIndicator currentPrice={coin.current_price} high={coin.high_24h} low={coin.low_24h} />
                             </td>
                         </tr>
-                    ))}
+                    )) : <>
+                        Saved Coins
+                    </>
+                    
+                }
                 </tbody>
             </Table>
         </ScrollArea>

@@ -1,8 +1,9 @@
 import { Grid, Paper, createStyles, rem } from '@mantine/core';
-import React from 'react'
+import React, { useContext} from 'react'
 import useAxios from '../../hooks/useAxios';
 import { CoinCard } from '../CoinCard/CoinCard';
 import s from "./Trending.module.scss"
+import { TrendingContext } from '@/context/TrendingContext';
 
 export interface ICoin { 
     item: {
@@ -32,19 +33,20 @@ const style = createStyles((theme) => {
 
 const Trending = () => {
     const { classes } = style();
-    let { response, loading, error } = useAxios<ICoinList>("search/trending");
-    console.log("RESPONSE TRENDING", response)
+    let { trendingData, trendingLoading, trendingError } = useContext(TrendingContext)
+    console.log("TRENDING DATA ", trendingData)
+
     return (
       <Paper w={"75%"} p="xl" radius="md" className={classes.paper}>
         <section>
           <h1>Trending</h1>
           <div className={s.gridContainer} >
-            {loading
+            {trendingLoading
               ? [...Array(8)].map((_, index) => (
                 //@ts-ignore
                   <CoinCard isSkeleton={true} key={index} />
                 ))
-              : response?.coins.map((coin, index) => (
+              : trendingData?.coins.map((coin, index) => (
                   <CoinCard
                     coin = {coin}
                     data={[
