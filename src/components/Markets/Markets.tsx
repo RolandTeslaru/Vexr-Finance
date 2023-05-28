@@ -54,6 +54,17 @@ const Markets = () => {
                     marketData?.map((coin , index) => (
                         <tr key={index}>
                             <td>
+                                <div style={{width: "auto", height: "auto", margin: "auto", display: "flex", cursor: "pointer"}}>
+                                    <AiOutlineStar size={20} onClick={(event) => {
+                                        onClickStar(coin.id);
+                                        event.preventDefault();
+                                        console.log("All saved coins", savedCoins)
+                                    }}
+                                        color={`${savedCoins.includes(coin.id) ? "yellow" : "gray"}`}
+                                    />
+                                </div> 
+                            </td>
+                            <td>
                                 <p style={{textAlign: "center"}}>
                                     {coin.market_cap_rank}
                                 </p>
